@@ -21,6 +21,7 @@ import java.util.Set;
 public class ReflectionUtil {
 
     /**
+     * 子类扫描
      * scan the classes marked by the specified annotation in the specified package
      *
      * @param packageNames specified package name
@@ -35,6 +36,7 @@ public class ReflectionUtil {
     }
 
     /**
+     * 实现类 扫描
      * Get the implementation class of the interface
      *
      * @param packageNames   specified package name
@@ -96,6 +98,7 @@ public class ReflectionUtil {
     }
 
     /**
+     * 反射执行
      * execute the void method
      *
      * @param method target method

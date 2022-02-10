@@ -37,6 +37,8 @@ public class InterceptorFactory {
                 throw new CannotInitializeConstructorException("not init constructor , the interceptor name :" + interceptorClass.getSimpleName());
             }
         });
+
+        //遍历所有aop切面类
         aspects.forEach(aClass -> {
             Object obj = ReflectionUtil.newInstance(aClass);
             Interceptor interceptor = new InternallyAspectInterceptor(obj);
@@ -46,7 +48,7 @@ public class InterceptorFactory {
             }
             interceptors.add(interceptor);
         });
-        // 添加Bean验证拦截器
+        // 添加参数验证拦截器
         interceptors.add(new BeanValidationInterceptor());
         // 根据 order 为拦截器排序
         interceptors = interceptors.stream().sorted(Comparator.comparing(Interceptor::getOrder)).collect(Collectors.toList());

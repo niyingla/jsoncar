@@ -57,6 +57,11 @@ public final class ApplicationContext {
         return APPLICATION_CONTEXT;
     }
 
+    /**
+     * 默认扫描包名 applicationClass.getPackage().getName()
+     * @param applicationClass
+     * @return
+     */
     private static String[] getPackageNames(Class<?> applicationClass) {
         ComponentScan componentScan = applicationClass.getAnnotation(ComponentScan.class);
         return !Objects.isNull(componentScan) ? componentScan.value()

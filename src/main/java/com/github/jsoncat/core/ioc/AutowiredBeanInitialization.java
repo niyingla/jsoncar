@@ -41,7 +41,7 @@ public class AutowiredBeanInitialization {
                     String beanFieldName = BeanHelper.getBeanName(beanField.getType());
                     // 解决循环依赖问题
                     beanFieldInstance = resolveCircularDependency(beanInstance, beanFieldInstance, beanFieldName);
-                    // AOP
+                    // AOP 获取一个代理类（jdk/cglib）
                     BeanPostProcessor beanPostProcessor = AopProxyBeanPostProcessorFactory.get(beanField.getType());
                     beanFieldInstance = beanPostProcessor.postProcessAfterInitialization(beanFieldInstance);
                     ReflectionUtil.setField(beanInstance, beanField, beanFieldInstance);
@@ -64,6 +64,7 @@ public class AutowiredBeanInitialization {
         Class<?> beanFieldClass = beanField.getType();
         String beanFieldName = BeanHelper.getBeanName(beanFieldClass);
         Object beanFieldInstance;
+        //当注入类型为接口时
         if (beanFieldClass.isInterface()) {
             @SuppressWarnings("unchecked")
             Set<Class<?>> subClasses = ReflectionUtil.getSubClass(packageNames, (Class<Object>) beanFieldClass);

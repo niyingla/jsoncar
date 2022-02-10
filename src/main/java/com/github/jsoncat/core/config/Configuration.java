@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+
 public interface Configuration {
 
     String[] DEFAULT_CONFIG_NAMES = {"application.properties", "application.yaml"};
