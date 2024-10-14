@@ -8,6 +8,7 @@ import com.github.jsoncat.core.aop.intercept.Interceptor;
 import com.github.jsoncat.core.aop.intercept.InternallyAspectInterceptor;
 import com.github.jsoncat.exception.CannotInitializeConstructorException;
 import com.github.jsoncat.factory.ClassFactory;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  * @createTime 2020年10月09日 22:24:00
  **/
 public class InterceptorFactory {
+    @Getter
     private static List<Interceptor> interceptors = new ArrayList<>();
 
     public static void loadInterceptors(String[] packageName) {
@@ -54,7 +56,4 @@ public class InterceptorFactory {
         interceptors = interceptors.stream().sorted(Comparator.comparing(Interceptor::getOrder)).collect(Collectors.toList());
     }
 
-    public static List<Interceptor> getInterceptors() {
-        return interceptors;
-    }
 }

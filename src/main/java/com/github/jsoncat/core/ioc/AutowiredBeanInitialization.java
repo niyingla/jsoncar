@@ -34,22 +34,20 @@ public class AutowiredBeanInitialization {
         Class<?> beanClass = beanInstance.getClass();
         Field[] beanFields = beanClass.getDeclaredFields();
         // 遍历bean的属性
-        if (beanFields.length > 0) {
-            for (Field beanField : beanFields) {
-                if (beanField.isAnnotationPresent(Autowired.class)) {
-                    Object beanFieldInstance = processAutowiredAnnotationField(beanField);
-                    String beanFieldName = BeanHelper.getBeanName(beanField.getType());
-                    // 解决循环依赖问题
-                    beanFieldInstance = resolveCircularDependency(beanInstance, beanFieldInstance, beanFieldName);
-                    // AOP 获取一个代理类（jdk/cglib）
-                    BeanPostProcessor beanPostProcessor = AopProxyBeanPostProcessorFactory.get(beanField.getType());
-                    beanFieldInstance = beanPostProcessor.postProcessAfterInitialization(beanFieldInstance);
-                    ReflectionUtil.setField(beanInstance, beanField, beanFieldInstance);
-                }
-                if (beanField.isAnnotationPresent(Value.class)) {
-                    Object convertedValue = processValueAnnotationField(beanField);
-                    ReflectionUtil.setField(beanInstance, beanField, convertedValue);
-                }
+        for (Field beanField : beanFields) {
+            if (beanField.isAnnotationPresent(Autowired.class)) {
+                Object beanFieldInstance = processAutowiredAnnotationField(beanField);
+                String beanFieldName = BeanHelper.getBeanName(beanField.getType());
+                // 解决循环依赖问题
+                beanFieldInstance = resolveCircularDependency(beanInstance, beanFieldInstance, beanFieldName);
+                // AOP 获取一个代理类（jdk/cglib）
+                BeanPostProcessor beanPostProcessor = AopProxyBeanPostProcessorFactory.get(beanField.getType());
+                beanFieldInstance = beanPostProcessor.postProcessAfterInitialization(beanFieldInstance);
+                ReflectionUtil.setField(beanInstance, beanField, beanFieldInstance);
+            }
+            if (beanField.isAnnotationPresent(Value.class)) {
+                Object convertedValue = processValueAnnotationField(beanField);
+                ReflectionUtil.setField(beanInstance, beanField, convertedValue);
             }
         }
     }
@@ -61,26 +59,30 @@ public class AutowiredBeanInitialization {
      * @return 目标类的字段对应的对象
      */
     private Object processAutowiredAnnotationField(Field beanField) {
+        //当前字段的类型
         Class<?> beanFieldClass = beanField.getType();
+        //根据类型获取注入的bean名字
         String beanFieldName = BeanHelper.getBeanName(beanFieldClass);
         Object beanFieldInstance;
         //当注入类型为接口时
         if (beanFieldClass.isInterface()) {
+            // 获取接口的实现类
             @SuppressWarnings("unchecked")
             Set<Class<?>> subClasses = ReflectionUtil.getSubClass(packageNames, (Class<Object>) beanFieldClass);
-            if (subClasses.size() == 0) {
+            if (subClasses.isEmpty()) {
                 throw new InterfaceNotHaveImplementedClassException(beanFieldClass.getName() + "is interface and do not have implemented class exception");
             }
             if (subClasses.size() == 1) {
                 Class<?> subClass = subClasses.iterator().next();
+                // 获取接口的实现类名字
                 beanFieldName = BeanHelper.getBeanName(subClass);
             }
             if (subClasses.size() > 1) {
                 Qualifier qualifier = beanField.getDeclaredAnnotation(Qualifier.class);
                 beanFieldName = qualifier == null ? beanFieldName : qualifier.value();
             }
-
         }
+        //缓存中的对象
         beanFieldInstance = BeanFactory.BEANS.get(beanFieldName);
         if (beanFieldInstance == null) {
             throw new CanNotDetermineTargetBeanException("can not determine target bean of" + beanFieldClass.getName());

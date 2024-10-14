@@ -68,15 +68,19 @@ public final class ApplicationContext {
                 : new String[]{applicationClass.getPackage().getName()};
     }
 
+    /**
+     * The last step is to start web application
+     */
     private void callRunners() {
         List<ApplicationRunner> runners = new ArrayList<>(BeanFactory.getBeansOfType(ApplicationRunner.class).values());
         //The last step is to start web application
+        //添加 web服务
         runners.add(() -> {
             HttpServer httpServer = new HttpServer();
             httpServer.start();
         });
-        for (Object runner : new LinkedHashSet<>(runners)) {
-            ((ApplicationRunner) runner).run();
+        for (ApplicationRunner runner : new LinkedHashSet<>(runners)) {
+            runner.run();
         }
     }
 

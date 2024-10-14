@@ -18,7 +18,7 @@ public class DependencyInjection {
     public static void inject(String[] packageNames) {
         AutowiredBeanInitialization autowiredBeanInitialization = new AutowiredBeanInitialization(packageNames);
         Map<String, Object> beans = BeanFactory.BEANS;
-        if (beans.size() > 0) {
+        if (!beans.isEmpty()) {
             BeanFactory.BEANS.values().forEach(autowiredBeanInitialization::initialize);
         }
     }

@@ -37,6 +37,12 @@ public class YamlResourceLoader extends AbstractResourceLoader {
         return result;
     }
 
+    /**
+     * 多级map 转化成简单map
+     * @param result
+     * @param source
+     * @param path 前面的key
+     */
     private void buildFlattenedMap(Map<String, String> result, Map<String, Object> source, String path) {
         source.forEach((key, value) -> {
             if (path != null && !path.isEmpty()) {
