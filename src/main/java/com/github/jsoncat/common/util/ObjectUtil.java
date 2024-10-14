@@ -1,5 +1,7 @@
 package com.github.jsoncat.common.util;
 
+import com.github.demo.user.Gender;
+
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 
@@ -20,5 +22,12 @@ public class ObjectUtil {
         PropertyEditor editor = PropertyEditorManager.findEditor(targetType);
         editor.setAsText(s);
         return editor.getValue();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ObjectUtil.convert(String.class, "1"));
+        System.out.println(ObjectUtil.convert(Integer.class, "1"));
+        System.out.println(ObjectUtil.convert(Boolean.class, "true"));
+        System.out.println(ObjectUtil.convert(Gender.class, "MALE"));
     }
 }
