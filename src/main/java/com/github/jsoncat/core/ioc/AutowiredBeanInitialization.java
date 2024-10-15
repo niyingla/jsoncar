@@ -28,25 +28,40 @@ public class AutowiredBeanInitialization {
     }
 
     //二级缓存（解决循环依赖问题）
+    /**
+     * 存放注入了属性的的bean
+     */
     private static final Map<String, Object> SINGLETON_OBJECTS = new ConcurrentHashMap<>(64);
 
+    /**
+     * 初始化对象属性
+     * @param beanInstance
+     */
     public void initialize(Object beanInstance) {
         Class<?> beanClass = beanInstance.getClass();
         Field[] beanFields = beanClass.getDeclaredFields();
         // 遍历bean的属性
         for (Field beanField : beanFields) {
+            //注入对象
             if (beanField.isAnnotationPresent(Autowired.class)) {
+                //获取容器中的字段对象
                 Object beanFieldInstance = processAutowiredAnnotationField(beanField);
+                //获取字段对象bean名称
                 String beanFieldName = BeanHelper.getBeanName(beanField.getType());
                 // 解决循环依赖问题
                 beanFieldInstance = resolveCircularDependency(beanInstance, beanFieldInstance, beanFieldName);
                 // AOP 获取一个代理类（jdk/cglib）
                 BeanPostProcessor beanPostProcessor = AopProxyBeanPostProcessorFactory.get(beanField.getType());
+                //包装代理方法
                 beanFieldInstance = beanPostProcessor.postProcessAfterInitialization(beanFieldInstance);
+                //设置到字段
                 ReflectionUtil.setField(beanInstance, beanField, beanFieldInstance);
             }
+            //注入属性值
             if (beanField.isAnnotationPresent(Value.class)) {
+                //处理@Value注解
                 Object convertedValue = processValueAnnotationField(beanField);
+                //设置到字段
                 ReflectionUtil.setField(beanInstance, beanField, convertedValue);
             }
         }
@@ -98,11 +113,13 @@ public class AutowiredBeanInitialization {
      */
     private Object processValueAnnotationField(Field beanField) {
         String key = beanField.getDeclaredAnnotation(Value.class).value();
+        //从配置信息里面获取
         ConfigurationManager configurationManager = (ConfigurationManager) BeanFactory.BEANS.get(ConfigurationManager.class.getName());
         String value = configurationManager.getString(key);
         if (value == null) {
             throw new IllegalArgumentException("can not find target value for property:{" + key + "}");
         }
+        //转化类型
         return ObjectUtil.convert(beanField.getType(), value);
     }
 

@@ -36,7 +36,12 @@ public final class BeanFactory {
         BEANS.put(ConfigurationManager.class.getName(), new ConfigurationManager(ConfigurationFactory.getConfig()));
     }
 
+    /**
+     * 执行bean后处理器
+     * 替换bean实例为aop代理对象
+     */
     public static void applyBeanPostProcessors() {
+        //替换bean实例
         BEANS.replaceAll((beanName, beanInstance) -> {
             BeanPostProcessor beanPostProcessor = AopProxyBeanPostProcessorFactory.get(beanInstance.getClass());
             return beanPostProcessor.postProcessAfterInitialization(beanInstance);

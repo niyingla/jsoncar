@@ -26,6 +26,10 @@ public class InterceptorFactory {
     @Getter
     private static List<Interceptor> interceptors = new ArrayList<>();
 
+    /**
+     * 扫描拦截器并排序
+     * @param packageName
+     */
     public static void loadInterceptors(String[] packageName) {
         // 获取指定包中实现了 Interceptor 接口的类
         Set<Class<? extends Interceptor>> interceptorClasses = ReflectionUtil.getSubClass(packageName, Interceptor.class);

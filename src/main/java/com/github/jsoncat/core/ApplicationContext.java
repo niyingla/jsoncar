@@ -85,6 +85,10 @@ public final class ApplicationContext {
     }
 
 
+    /**
+     * 加载配置到ConfigurationManager
+     * @param applicationClass
+     */
     private void loadResources(Class<?> applicationClass) {
         ClassLoader classLoader = applicationClass.getClassLoader();
         List<Path> filePaths = new ArrayList<>();
